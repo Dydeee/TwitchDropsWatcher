@@ -9,9 +9,6 @@ jobs:
   run:
     runs-on: windows-latest
 
-    env:
-      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -28,4 +25,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run watcher
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: dotnet run --configuration Release
+
