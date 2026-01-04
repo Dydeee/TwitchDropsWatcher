@@ -24,11 +24,5 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run watcher (force env)
-        shell: pwsh
-        run: |
-          $env:DISCORD_WEBHOOK_URL = '${{ secrets.DISCORD_WEBHOOK_URL }}'
-          if ([string]::IsNullOrWhiteSpace($env:DISCORD_WEBHOOK_URL)) {
-            throw "DISCORD_WEBHOOK_URL still missing"
-          }
-          dotnet run --configuration Release
+      - name: Run watcher
+        run: dotnet run --configuration Release -- "${{ secrets.DISCORD_WEBHOOK_URL }}"

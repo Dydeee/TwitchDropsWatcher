@@ -1,96 +1,83 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-// ================== BEÁLLÍTÁSOK ==================
-
-var discordWebhookUrl =  Environment.GetEnvironmentVariable("https://discord.com/api/webhooks/1457397565111668797/wYOAi5SMIMVDEBeJh045IqJ0uAHj_eCQJTzQxa4s7UH1sNu7fFGxsmN0w7Q3cvX8Pm3q") 
-    ?? throw new Exception("DISCORD_WEBHOOK_URL env var missing");
-
-var watchedGames = new[]
+class Program
 {
-   "Escape from Tarkov",
-    "Tarkov Arena",
-    "ARC Raiders",
-    "Rust",
-    "Enshrouded",
-    "SCUM"
-};
-
-var stateFile = "sent.txt";
-
-// =================================================
-
-var sent = File.Exists(stateFile)
-    ? new HashSet<string>(File.ReadAllLines(stateFile))
-    : new HashSet<string>();
-
-using var http = new HttpClient();
-http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
-
-// 1️⃣ Oldal letöltése
-var html = await http.GetStringAsync("https://drophunter.app/drops");
-
-// DEBUG – ha kell még valaha
-File.WriteAllText("debug_drophunter.html", html);
-
-// 2️⃣ HTML parse
-var doc = new HtmlDocument();
-doc.LoadHtml(html);
-
-// 3️⃣ Kampány sorok (TABLE)
-var rows = doc.DocumentNode.SelectNodes("//table//tbody//tr");
-
-if (rows == null)
-{
-    Console.WriteLine("Nem található kampány táblázat.");
-    return;
-}
-
-foreach (var row in rows)
-{
-    // JÁTÉK NÉV
-    var gameNode = row.SelectSingleNode(".//h6");
-    if (gameNode == null)
-        continue;
-
-    var gameName = HtmlEntity.DeEntitize(gameNode.InnerText).Trim();
-
-    // csak a minket érdeklő játékok
-    if (!watchedGames.Any(g =>
-        gameName.Contains(g, StringComparison.OrdinalIgnoreCase)))
-        continue;
-
-    // VAN-E AKTÍV KAMPÁNY
-    var campaigns = row.SelectNodes(".//div[contains(@class,'campaign-item')]");
-    if (campaigns == null || campaigns.Count == 0)
-        continue;
-
-    // 1 játék = 1 értesítés
-    if (sent.Contains(gameName))
-        continue;
-
-    var msg = new
+    static async Task Main(string[] args)
     {
-        content =
-            "🎁 **AKTÍV TWITCH DROP**\n" +
-            $"🎮 **{gameName}**\n" +
-            "🔗 https://drophunter.app/drops"
-    };
+        const string stateFile = "sent.txt";
 
-    await http.PostAsync(
-        discordWebhookUrl,
-        new StringContent(
-            JsonSerializer.Serialize(msg),
-            Encoding.UTF8,
-            "application/json")
-    );
+        if (args.Length < 1 || string.IsNullOrWhiteSpace(args[0]))
+        {
+            Console.WriteLine("ERROR: Discord webhook URL missing (argument 0).");
+            Environment.Exit(1);
+        }
 
-    sent.Add(gameName);
+        string discordWebhookUrl = args[0];
+
+        string[] watchedGames =
+        {
+            "Escape from Tarkov",
+            "Tarkov Arena",
+            "ARC Raiders",
+            "SCUM",
+            "Rust",
+            "Enshrouded"
+        };
+
+        var sent = File.Exists(stateFile)
+            ? new HashSet<string>(File.ReadAllLines(stateFile))
+            : new HashSet<string>();
+
+        using var http = new HttpClient();
+
+        Console.WriteLine("Fetching drophunter page...");
+        var html = await http.GetStringAsync("https://drophunter.app/drops");
+
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
+
+        var pageText = doc.DocumentNode.InnerText;
+
+        foreach (var game in watchedGames)
+        {
+            if (!pageText.Contains(game, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (sent.Contains(game))
+            {
+                Console.WriteLine($"Already sent: {game}");
+                continue;
+            }
+
+            Console.WriteLine($"New drop detected: {game}");
+
+            var payload = new
+            {
+                content =
+$@"🎁 **ÚJ TWITCH DROP**
+🎮 **{game}**
+🔗 https://www.twitch.tv/drops"
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+
+            await http.PostAsync(
+                discordWebhookUrl,
+                new StringContent(json, Encoding.UTF8, "application/json")
+            );
+
+            sent.Add(game);
+        }
+
+        File.WriteAllLines(stateFile, sent);
+
+        Console.WriteLine("Done.");
+    }
 }
-
-// 4️⃣ Állapot mentése
-File.WriteAllLines(stateFile, sent);
-
-Console.WriteLine("Kész.");
