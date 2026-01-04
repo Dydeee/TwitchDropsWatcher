@@ -27,4 +27,5 @@ jobs:
       - name: Run watcher
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "1"
         run: dotnet run --configuration Release
