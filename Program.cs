@@ -5,7 +5,8 @@ using HtmlAgilityPack;
 
 // ================== BEÁLLÍTÁSOK ==================
 
-var discordWebhookUrl = "https://discord.com/api/webhooks/1457397565111668797/wYOAi5SMIMVDEBeJh045IqJ0uAHj_eCQJTzQxa4s7UH1sNu7fFGxsmN0w7Q3cvX8Pm3q";
+var discordWebhookUrl =  Environment.GetEnvironmentVariable("https://discord.com/api/webhooks/1457397565111668797/wYOAi5SMIMVDEBeJh045IqJ0uAHj_eCQJTzQxa4s7UH1sNu7fFGxsmN0w7Q3cvX8Pm3q") 
+    ?? throw new Exception("DISCORD_WEBHOOK_URL env var missing");
 
 var watchedGames = new[]
 {
