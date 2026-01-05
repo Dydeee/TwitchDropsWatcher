@@ -61,17 +61,17 @@ class Program
             var payload = new
             {
                 content =
-$@"🎁 **ÚJ TWITCH DROP**
-🎮 **{game}**
-🔗 https://www.twitch.tv/drops"
+                            $@"🎁 **ÚJ TWITCH DROP**
+                            🎮 **{game}**
+                            🔗 https://www.twitch.tv/drops"
             };
 
             var json = JsonSerializer.Serialize(payload);
 
-            await http.PostAsync(
-                discordWebhookUrl,
-                new StringContent(json, Encoding.UTF8, "application/json")
-            );
+        //    await http.PostAsync(
+        //        discordWebhookUrl,
+        //        new StringContent(json, Encoding.UTF8, "application/json")
+        //    );
 
             sent.Add(game);
         }
