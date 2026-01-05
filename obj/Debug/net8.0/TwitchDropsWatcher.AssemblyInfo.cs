@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TwitchDropsWatcher")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+438e1c6b146ef464804889e8f2e9d8b21646a892")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+345bb845ef89c9e04d1344a6992c09a91f0c0d8c")]
 [assembly: System.Reflection.AssemblyProductAttribute("TwitchDropsWatcher")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TwitchDropsWatcher")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
