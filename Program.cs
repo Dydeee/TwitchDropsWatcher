@@ -15,7 +15,7 @@ class Program
 
         if (args.Length < 1 || string.IsNullOrWhiteSpace(args[0]))
         {
-            Console.WriteLine("ERROR: Discord webhook URL missing.");
+            Console.WriteLine("ERROR: Discord webhook URL missing (argument 0).");
             Environment.Exit(1);
         }
 
@@ -36,7 +36,6 @@ class Program
             : new HashSet<string>();
 
         using var http = new HttpClient();
-        http.Timeout = TimeSpan.FromSeconds(20);
 
         try
         {
@@ -46,71 +45,62 @@ class Program
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            var cards = doc.DocumentNode.SelectNodes("//a[contains(@href,'campaign')]");
+            var pageText = doc.DocumentNode.InnerText;
 
-            if (cards == null)
+            foreach (var game in watchedGames)
             {
-                Console.WriteLine("No drop cards found.");
-                return;
-            }
+                if (!pageText.Contains(game, StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-            foreach (var card in cards)
-            {
-                var cardText = card.InnerText.Trim();
-
-                foreach (var game in watchedGames)
+                if (sent.Contains(game))
                 {
-                    if (!cardText.Contains(game, StringComparison.OrdinalIgnoreCase))
-                        continue;
+                    Console.WriteLine($"Already sent: {game}");
+                    continue;
+                }
 
-                    string todayKey = $"{game}_{DateTime.UtcNow:yyyyMMdd}";
+                Console.WriteLine($"New drop detected: {game}");
 
-                    if (sent.Contains(todayKey))
+                var payload = new
+                {
+                    content =
+                                $@"🎁 **ÚJ TWITCH DROP**
+                                🎮 **{game}**
+                                🔗 https://www.twitch.tv/drops"
+                };
+
+                var json = JsonSerializer.Serialize(payload);
+
+                try
+                {
+                    var response = await http.PostAsync(
+                        discordWebhookUrl,
+                        new StringContent(json, Encoding.UTF8, "application/json")
+                    );
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine($"Already sent today: {game}");
-                        continue;
+                        Console.WriteLine($"✓ Successfully sent to Discord: {game}");
+                        sent.Add(game);
                     }
-
-                    Console.WriteLine($"New drop detected: {game}");
-
-                    var payload = new
+                    else
                     {
-                        content = $"🎁 **ÚJ TWITCH DROP**\n🎮 **{game}**\n🔗 https://www.twitch.tv/drops"
-                    };
-
-                    var json = JsonSerializer.Serialize(payload);
-
-                    try
-                    {
-                        var response = await http.PostAsync(
-                            discordWebhookUrl,
-                            new StringContent(json, Encoding.UTF8, "application/json")
-                        );
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            Console.WriteLine($"✓ Sent: {game}");
-                            sent.Add(todayKey);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"✗ Discord error: {response.StatusCode}");
-                        }
+                        Console.WriteLine($"✗ Discord webhook failed with status {response.StatusCode}: {game}");
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"✗ Discord send failed: {ex.Message}");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"✗ Error sending to Discord: {ex.Message}");
                 }
             }
 
             File.WriteAllLines(stateFile, sent);
+
             Console.WriteLine("Done.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"ERROR: {ex.Message}");
-            Console.WriteLine(ex.StackTrace);
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             Environment.Exit(1);
         }
     }
