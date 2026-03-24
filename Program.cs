@@ -52,9 +52,11 @@ class Program
                 if (!pageText.Contains(game, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                if (sent.Contains(game))
+                string todayKey = $"{game}_{DateTime.UtcNow:yyyyMMdd}";
+                
+                if (sent.Contains(todayKey))
                 {
-                    Console.WriteLine($"Already sent: {game}");
+                    Console.WriteLine($"Already sent today: {game}");
                     continue;
                 }
 
@@ -77,7 +79,7 @@ class Program
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine($"✓ Successfully sent to Discord: {game}");
-                        sent.Add(game);
+                        sent.Add(todayKey);
                     }
                     else
                     {
