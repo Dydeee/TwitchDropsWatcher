@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -37,47 +37,71 @@ class Program
 
         using var http = new HttpClient();
 
-        Console.WriteLine("Fetching drophunter page...");
-        var html = await http.GetStringAsync("https://drophunter.app/drops");
-
-        var doc = new HtmlDocument();
-        doc.LoadHtml(html);
-
-        var pageText = doc.DocumentNode.InnerText;
-
-        foreach (var game in watchedGames)
+        try
         {
-            if (!pageText.Contains(game, StringComparison.OrdinalIgnoreCase))
-                continue;
+            Console.WriteLine("Fetching drophunter page...");
+            var html = await http.GetStringAsync("https://drophunter.app/drops");
 
-            if (sent.Contains(game))
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            var pageText = doc.DocumentNode.InnerText;
+
+            foreach (var game in watchedGames)
             {
-                Console.WriteLine($"Already sent: {game}");
-                continue;
+                if (!pageText.Contains(game, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (sent.Contains(game))
+                {
+                    Console.WriteLine($"Already sent: {game}");
+                    continue;
+                }
+
+                Console.WriteLine($"New drop detected: {game}");
+
+                var payload = new
+                {
+                    content =
+                                $@"🎁 **ÚJ TWITCH DROP**
+                                🎮 **{game}**
+                                🔗 https://www.twitch.tv/drops"
+                };
+
+                var json = JsonSerializer.Serialize(payload);
+
+                try
+                {
+                    var response = await http.PostAsync(
+                        discordWebhookUrl,
+                        new StringContent(json, Encoding.UTF8, "application/json")
+                    );
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"✓ Successfully sent to Discord: {game}");
+                        sent.Add(game);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"✗ Discord webhook failed with status {response.StatusCode}: {game}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"✗ Error sending to Discord: {ex.Message}");
+                }
             }
 
-            Console.WriteLine($"New drop detected: {game}");
+            File.WriteAllLines(stateFile, sent);
 
-            var payload = new
-            {
-                content =
-                            $@"🎁 **ÚJ TWITCH DROP**
-                            🎮 **{game}**
-                            🔗 https://www.twitch.tv/drops"
-            };
-
-            var json = JsonSerializer.Serialize(payload);
-
-        //    await http.PostAsync(
-        //        discordWebhookUrl,
-        //        new StringContent(json, Encoding.UTF8, "application/json")
-        //    );
-
-            sent.Add(game);
+            Console.WriteLine("Done.");
         }
-
-        File.WriteAllLines(stateFile, sent);
-
-        Console.WriteLine("Done.");
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            Environment.Exit(1);
+        }
     }
 }
