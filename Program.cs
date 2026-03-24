@@ -62,10 +62,7 @@ class Program
 
                 var payload = new
                 {
-                    content =
-                                $@"🎁 **ÚJ TWITCH DROP**
-                                🎮 **{game}**
-                                🔗 https://www.twitch.tv/drops"
+                    content = $"🎁 **ÚJ TWITCH DROP**\n🎮 **{game}**\n🔗 https://www.twitch.tv/drops"
                 };
 
                 var json = JsonSerializer.Serialize(payload);
