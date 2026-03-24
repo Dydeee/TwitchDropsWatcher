@@ -1,28 +1,28 @@
-# name: Twitch Drops Watcher
+name: Twitch Drops Watcher
 
-# on:
-#   schedule:
-#     - cron: "*/15 * * * *"
-#   workflow_dispatch:
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
 
-# jobs:
-#   run:
-#     runs-on: windows-latest
+jobs:
+  run:
+    runs-on: windows-latest
 
-#     steps:
-#       - name: Checkout repo
-#         uses: actions/checkout@v4
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-#       - name: Setup .NET
-#         uses: actions/setup-dotnet@v4
-#         with:
-#           dotnet-version: "8.0.x"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
 
-#       - name: Restore
-#         run: dotnet restore
+      - name: Restore
+        run: dotnet restore
 
-#       - name: Build
-#         run: dotnet build --configuration Release --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-#       - name: Run watcher
-#         run: dotnet run --configuration Release -- "${{ secrets.DISCORD_WEBHOOK_URL }}"
+      - name: Run watcher
+        run: dotnet run --configuration Release -- "${{ secrets.DISCORD_WEBHOOK_URL }}"
