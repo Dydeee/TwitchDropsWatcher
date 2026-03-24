@@ -2,11 +2,8 @@ name: Twitch Drops Watcher
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   run:
@@ -15,8 +12,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -31,11 +26,3 @@ jobs:
 
       - name: Run watcher
         run: dotnet run --configuration Release -- "${{ secrets.DISCORD_WEBHOOK_URL }}"
-
-      - name: Commit sent.txt if changed
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add sent.txt
-          git diff --cached --quiet || git commit -m "Update sent.txt"
-          git push
