@@ -48,3 +48,7 @@ Escape from Tarkov_20260426
 ARC Raiders_20260426
 Rust_20260426
 Enshrouded_20260426
+Escape from Tarkov_20260427
+ARC Raiders_20260427
+Rust_20260427
+Enshrouded_20260427
