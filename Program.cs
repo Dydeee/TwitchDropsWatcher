@@ -28,7 +28,9 @@ class Program
             "ARC Raiders",
             "SCUM",
             "Rust",
-            "Enshrouded"
+            "Enshrouded",
+            "Path of Exile 2",
+            "Last Epoch"
         };
 
         var sent = File.Exists(stateFile)
