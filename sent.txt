@@ -162,3 +162,4 @@ ARC Raiders_20260717
 Rust_20260717
 ARC Raiders_20260718
 Rust_20260718
+Escape from Tarkov_20260718
