@@ -188,3 +188,5 @@ Rust_20260803
 Rust_20260804
 Rust_20260805
 Escape from Tarkov_20260805
+Escape from Tarkov_20260806
+Rust_20260806
