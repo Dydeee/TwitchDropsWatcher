@@ -211,3 +211,5 @@ Rust_20260814
 Path of Exile 2_20260814
 Escape from Tarkov_20260815
 Rust_20260815
+Escape from Tarkov_20260816
+Rust_20260816
