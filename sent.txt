@@ -283,3 +283,4 @@ Rust_20260929
 Rust_20260930
 Rust_20261001
 Last Epoch_20261001
+Escape from Tarkov_20261001
