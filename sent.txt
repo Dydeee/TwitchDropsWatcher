@@ -281,3 +281,5 @@ Escape from Tarkov_20260928
 Rust_20260928
 Rust_20260929
 Rust_20260930
+Rust_20261001
+Last Epoch_20261001
