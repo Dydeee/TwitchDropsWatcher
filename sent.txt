@@ -293,3 +293,4 @@ Rust_20261004
 Last Epoch_20261004
 Escape from Tarkov_20261004
 Escape from Tarkov_20261005
+ARC Raiders_20261008
