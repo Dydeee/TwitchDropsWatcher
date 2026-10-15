@@ -307,3 +307,4 @@ ARC Raiders_20261013
 Escape from Tarkov_20261014
 ARC Raiders_20261014
 ARC Raiders_20261015
+Rust_20261015
