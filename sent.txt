@@ -315,3 +315,6 @@ Enshrouded_20261016
 ARC Raiders_20261017
 Rust_20261017
 Enshrouded_20261017
+ARC Raiders_20261018
+Rust_20261018
+Enshrouded_20261018
