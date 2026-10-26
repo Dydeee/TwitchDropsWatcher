@@ -340,3 +340,6 @@ Escape from Tarkov_20261024
 ARC Raiders_20261025
 Rust_20261025
 Enshrouded_20261025
+ARC Raiders_20261026
+Rust_20261026
+Enshrouded_20261026
