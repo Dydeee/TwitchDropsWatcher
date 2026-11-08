@@ -374,3 +374,6 @@ Escape from Tarkov_20261106
 Escape from Tarkov_20261107
 Rust_20261107
 Enshrouded_20261107
+Escape from Tarkov_20261108
+Rust_20261108
+Enshrouded_20261108
